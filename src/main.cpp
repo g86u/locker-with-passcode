@@ -2,12 +2,12 @@
 #include "Adafruit_Keypad.h"
 #include "Wire.h"
 #include "Adafruit_LiquidCrystal.h"
-#include <Servo.h> //all the libraries that you need in order for the program to work
+#include <Servo.h>
 
 #define LUNGIME_PAROLA 4
 #define ROWS 4
 #define COLS 4
-#define NOTE_C5 523
+#define NOTE_C5 523 // de aici incep notele necesare pentru creearea sunetelor
 #define NOTE_D5 587
 #define NOTE_E5 659
 #define NOTE_F5 698
@@ -26,17 +26,18 @@
 #define NOTE_C3 131
 #define NOTE_CS3 139
 
-char parola_corecta[LUNGIME_PAROLA] = {'1', '2', '3', 'A'}; // here you set the password you want for the locker
-char parola_introdusa[LUNGIME_PAROLA] = {};                 // this is the array for the password that will be introduced (either wrong or right)
+char parola_corecta[LUNGIME_PAROLA] = {'1', '2', '3', 'A'}; // aici setezi parola dorita
+char parola_introdusa[LUNGIME_PAROLA] = {};                 // acesta este tabloul unidimensional unde va fi introdusa parola
+// data de la tastatura si verificata
 
 char keys[ROWS][COLS] = {
     {'1', '2', '3', 'A'},
     {'4', '5', '6', 'B'},
     {'7', '8', '9', 'C'},
     {'*', '0', '#', 'D'}};
-byte rowPins[ROWS] = {9, 8, 7, 6};                   // ROWS with orange wire cables
-byte colPins[COLS] = {5, 4, 3, 2};                   // COLS with green wire cables
-const int led_red = 10, led_green = 11, buzzer = 13; // white wire cables for those
+byte rowPins[ROWS] = {9, 8, 7, 6};
+byte colPins[COLS] = {5, 4, 3, 2};
+const int led_red = 10, led_green = 11, buzzer = 13;
 
 Adafruit_LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);
 Adafruit_Keypad customKeypad = Adafruit_Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
@@ -53,17 +54,17 @@ void setup()
   pinMode(buzzer, OUTPUT);
 }
 
-int pozitie = 0; // this keeps the track of the position on the display
-int greseli = 0; // these keeps track of the mistakes, if there will be 3 mistakes then teh locker will be blocked for 30 seconds
+int pozitie = 0; // memoreazz pozitia caracterului introdus
+int greseli = 0; // memoreaza parolele introduse gresit
 
 void loop()
 {
   customKeypad.tick();
 
   // ====== Citire caracter curent
-  lcd.setCursor(pozitie, 0); // set the cursor on the display
+  lcd.setCursor(pozitie, 0); // seteaza pozitia cursorului pe ecranul lcd-ului
   keypadEvent e = customKeypad.read();
-  if (e.bit.KEY != 255) // test if something is introduced. If you pressed on teh keypad then it will convert the symbols in ascii
+  if (e.bit.KEY != 255) // testeaza daca ceva este introdus. Daca un caracter este apasat, acesta va fi convertit in ASCII
   {
     if (e.bit.EVENT == KEY_JUST_PRESSED)
     {
@@ -74,18 +75,18 @@ void loop()
   }
 
   // ====== Validare parolă
-  if (pozitie == LUNGIME_PAROLA) // it starts veryfing if the password introduce is right or wrong only when the position is equal to four
+  if (pozitie == LUNGIME_PAROLA) // incepe a verifica parola introdusa imediat dupa ce au fost introduse 4 caractere
   {
-    int i;
+    int i; // acest numar ajuta la verificare greselilor din parola introdusa (daca exista)
     for (i = 0; i < LUNGIME_PAROLA; i++)
     {
       if (parola_introdusa[i] != parola_corecta[i])
       {
-        greseli++;
+        greseli++; // daca e gresita parola introdusa, greselile se aduna
         break;
       }
     }
-    if (greseli == 3) // verify  before the code below how many mistakes were made
+    if (greseli == 3) // verifica inainte de codul de dedesubt cate greseli sunt. Daca sunt 3 greseli "seiful" se blocheaza pentru 30 de secunde
     {
       lcd.clear();
       digitalWrite(led_red, HIGH);
@@ -95,19 +96,19 @@ void loop()
       tone(13, NOTE_GS2, 2000);
       delay(30000);
       digitalWrite(led_red, LOW);
-      greseli = 0; // don't forget to reset the mistakes  made
+      greseli = 0; // greselile trebuiesc resetate imediat dupa
       return;
     }
 
     delay(250);
 
     bool parola_e_valida = i == LUNGIME_PAROLA;
-    if (parola_e_valida) // if there were introduced four numbers/letters/symbols then  it means that the password introduced was right
+    if (parola_e_valida) // daca numarul i a ajuns la 4 inseamna ca parola e valida
     {
       lcd.clear();
-      digitalWrite(led_green, HIGH); // and the green led will light up and the locker will unlock
+      digitalWrite(led_green, HIGH); // iar led-ul verde se va aprinde si servo motorul va deschide "seiful"
       myservo.write(180);
-      tone(13, NOTE_C5, 2000); // plus the tone heard will be higher
+      tone(13, NOTE_C5, 2000);
       tone(13, NOTE_D5, 2000);
       tone(13, NOTE_E5, 2000);
       tone(13, NOTE_F5, 2000);
@@ -118,9 +119,9 @@ void loop()
 
       delay(10000);
       myservo.write(-180);
-      greseli = 0;
+      greseli = 0; // greselile trebuiesc resetate si aici
     }
-    else // otherwise the red led will light up and the tone will sound deeper
+    else // daca numarul i nu a ajuns la 4, inseamna ca parola a fost introdusa gresit si va fi executat codul de mai jos
     {
       lcd.clear();
       tone(13, NOTE_AS3, 2000);
@@ -131,8 +132,8 @@ void loop()
       delay(3000);
     }
 
-    lcd.clear();
-    pozitie = 0;
+    lcd.clear(); // ecranul se "curata"
+    pozitie = 0; // pozitia se reseteaza pentru a fi introdusa o noua parola
     digitalWrite(led_green, LOW);
     digitalWrite(led_red, LOW);
   }
