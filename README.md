@@ -1,21 +1,21 @@
 # Locker with passcode
-## Introducere
-Ideea proiectului este luată dintr-un [curs despre Arduino aflat pe platforma Skillshare](https://skl.sh/3BiAi2E), acesta fiind motivul pentru care am păstrat numele în limba engleză.
+## Prelude
+The [Arduino course that you can find on Skillshare](https://skl.sh/3BiAi2E) inspires the project I made.
 
-## Componente necesare
+## Requiered components
 - Arduino Uno
-- Breadboard (opțional)
+- Breadboard (optional)
 - Keypad
-- Ecran LCD
+- LCD display
 - Servo motor
-- Buzzer pasiv
-- 2x LED-uri
-- Mai multe fire male-to-male sau female-to-male (în funcție de preferința pentru breadboard)
-- 2x Rezistori de 220 ohmi
-- Rezistor cu rezistență variabilă
+- Passive buzzer
+- 2x LEDs (green and red, if possible)
+- Multiple male-to male or female-to-male wires (depending on the preference for teh breadboard)
+- 2x resistors
+- one variable resistor
 
-## Editor
-Inițial am folosit Arduino IDE, iar mai apoi m-am mutat pe Visual Studio Code folosind extensia [PlatformIO](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide).
+## IDE
+I initially used Arduino, and after I started to work on Visual Code Studio using the extension named [PlatformIO](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide).
 
-## Descriere
-Prin intermediul tastaturii se va introduce o parolă de 4 caractere ce vor fi afișate pe ecranul LCD. Dacă parola introdusă este corectă, motorul servo se va roti, LED-ul verde se va aprinde și buzzer-ul va scoate un anumit sunet, iar "seiful" va rămâne deschis timp de 10 secunde. Dacă parola introdusă este greșită se va aprinde LED-ul roșu și buzzer-ul va scoate un sunet diferit. Dacă parola este introdusă de 3 ori la rând greșit, buzzer-ul va scoate un sunet mai pronunțat, iar "seiful" va fi blocat pentru 30 de secunde.
+## Description
+Using the keypad, you can introduce a four characters password that will appear on the LCD. If the password is correct, the servo motor will spin, the green LED will light up, the buzzer will make a sound, and the "locker" will remain open for 10 seconds. If the password is incorrect, the red LED will light up, and the buzzer will make another sound. If the password is incorrectly introduced thrice in a row, the red LED will light up, the buzzer will produce a deeper sound, and the "locker" will block for 30 seconds.
